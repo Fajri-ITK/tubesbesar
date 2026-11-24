@@ -13,7 +13,12 @@ CREATE TABLE pesanan (
         'Diproses',
         'Selesai',
         'Diambil'
-    ) NOT NULL DEFAULT 'Diproses'
+    ) NOT NULL DEFAULT 'Diproses',
+    status_pembayaran ENUM(
+    'Belum Bayar',
+    'DP',
+    'Lunas'
+    ) NOT NULL DEFAULT 'Belum Bayar'
 );
 
 -- 2. Tabel Master Katalog Layanan (Jasa)
@@ -68,21 +73,8 @@ CREATE TABLE detail_pesanan (
     CONSTRAINT chk_harga_detail CHECK (harga_satuan >= 0)
 );
 
--- 5. Tabel Nota (Ringkasan Transaksi / Relasi 1:1 Opsional)
-CREATE TABLE nota (
-    id_nota VARCHAR(10) PRIMARY KEY,
-    id_pesanan VARCHAR(10) NOT NULL UNIQUE,
-    tanggal_nota DATE NOT NULL,
-    total_nota DECIMAL(12,2) NOT NULL DEFAULT 0,
 
-    CONSTRAINT fk_nota_pesanan
-        FOREIGN KEY (id_pesanan)
-        REFERENCES pesanan(id_pesanan),
-
-    CONSTRAINT chk_total_nota CHECK (total_nota >= 0)
-);
-
--- 6. Tabel Pembayaran (Riwayat Bayar Tunai / QRIS)
+-- 5. Tabel Pembayaran
 CREATE TABLE pembayaran (
     id_pembayaran INT AUTO_INCREMENT PRIMARY KEY,
     id_pesanan VARCHAR(10) NOT NULL,
@@ -97,7 +89,7 @@ CREATE TABLE pembayaran (
     CONSTRAINT chk_jumlah_bayar CHECK (jumlah_bayar >= 0)
 );
 
--- 7. Tabel Pencatatan Stok (Audit Persediaan Barang Fisik)
+-- 6. Tabel Pencatatan Stok (Audit Persediaan Barang Fisik)
 CREATE TABLE pencatatan_stok (
     id_pencatatan INT AUTO_INCREMENT PRIMARY KEY,
     id_barang VARCHAR(10) NOT NULL,
